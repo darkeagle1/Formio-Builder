@@ -1,0 +1,114 @@
+<div class="main-page-container">
+  <div class="header">
+    <h1>Dynamic Form Builder</h1>
+    <p>Gestiona tus formularios dinámicos</p>
+  </div>
+
+  <div class="actions-container">
+    <div class="action-card">
+      <div class="action-icon crear-icon">
+        <i class="icon">📝</i>
+      </div>
+      <h3>Crear Formulario</h3>
+      <p>Crea un nuevo formulario desde cero usando nuestro constructor visual</p>
+      <button class="action-btn crear-btn" (click)="onCrear()">
+        Crear Nuevo
+      </button>
+    </div>
+
+    <div class="action-card">
+      <div class="action-icon editar-icon">
+        <i class="icon">✏️</i>
+      </div>
+      <h3>Editar Formulario</h3>
+      <p>Modifica un formulario existente y actualiza su configuración</p>
+      <button class="action-btn editar-btn" (click)="onEditar()">
+        Editar Existente
+      </button>
+    </div>
+
+    <div class="action-card">
+      <div class="action-icon listar-icon">
+        <i class="icon">📋</i>
+      </div>
+      <h3>Listar Formularios</h3>
+      <p>Ve todos los formularios creados y gestiona tu biblioteca</p>
+      <button class="action-btn listar-btn" (click)="onListar()">
+        Ver Todos
+      </button>
+    </div>
+  </div>
+
+  <!-- Modal para listar formularios -->
+  <div class="modal-overlay" *ngIf="showFormsList" (click)="closeFormsList()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Formularios Creados</h2>
+        <button class="close-btn" (click)="closeFormsList()">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="forms-grid" *ngIf="forms.length > 0; else noForms">
+          <div class="form-item" *ngFor="let form of forms">
+            <div class="form-info">
+              <h4>{{ form.title }}</h4>
+              <p class="form-date">Creado: {{ form.createdAt | date:'dd/MM/yyyy' }}</p>
+              <p class="form-id">ID: {{ form.id }}</p>
+            </div>
+            <div class="form-actions">
+              <button class="view-form-btn" (click)="viewForm(form.id)">
+                Ver
+              </button>
+              <button class="edit-form-btn" (click)="editForm(form.id)">
+                Editar
+              </button>
+              <button class="delete-form-btn" (click)="deleteForm(form.id)">
+                Eliminar
+              </button>
+            </div>
+          </div>
+        </div>
+        <ng-template #noForms>
+          <div class="no-forms">
+            <p>No hay formularios creados aún.</p>
+            <button class="create-first-btn" (click)="onCrear(); closeFormsList()">
+              Crear el primero
+            </button>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para editar formularios -->
+  <div class="modal-overlay" *ngIf="showEditModal" (click)="closeEditModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Seleccionar Formulario para Editar</h2>
+        <button class="close-btn" (click)="closeEditModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="forms-grid" *ngIf="forms.length > 0; else noFormsEdit">
+          <div class="form-item selectable" *ngFor="let form of forms" (click)="editForm(form.id)">
+            <div class="form-info">
+              <h4>{{ form.title }}</h4>
+              <p class="form-date">Creado: {{ form.createdAt | date:'dd/MM/yyyy' }}</p>
+              <p class="form-id">ID: {{ form.id }}</p>
+            </div>
+            <div class="select-indicator">
+              <i class="icon">👆</i>
+              <span>Seleccionar</span>
+            </div>
+          </div>
+        </div>
+        <ng-template #noFormsEdit>
+          <div class="no-forms">
+            <p>No hay formularios disponibles para editar.</p>
+            <button class="create-first-btn" (click)="onCrear(); closeEditModal()">
+              Crear el primero
+            </button>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+</div>

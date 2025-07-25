@@ -1,0 +1,138 @@
+<div class="form-preview">
+  <h3>Vista Previa del Formulario</h3>
+  <p class="preview-description">Así es como verán los usuarios tu formulario</p>
+  
+  <div class="form-container">
+    <h2>{{ formSchema.title }}</h2>
+    
+    <div *ngIf="formSchema.fields.length > 0; else noFieldsMessage">
+      <form #previewForm="ngForm" (ngSubmit)="onSubmit()" class="preview-form">
+        
+        <div *ngFor="let field of formSchema.fields" class="form-field">
+          <label [for]="field.key" class="field-label">
+            {{ field.label }}
+            <span *ngIf="field.required" class="required">*</span>
+          </label>
+          
+          <!-- Campo de texto -->
+          <input 
+            *ngIf="field.type === 'textfield'"
+            type="text"
+            [id]="field.key"
+            [name]="field.key"
+            [placeholder]="field.placeholder || ''"
+            [required]="field.required || false"
+            [(ngModel)]="formData[field.key]"
+            (ngModelChange)="onFieldValueChange(field.key, $event)"
+            class="form-input"
+          />
+          
+          <!-- Área de texto -->
+          <textarea 
+            *ngIf="field.type === 'textarea'"
+            [id]="field.key"
+            [name]="field.key"
+            [placeholder]="field.placeholder || ''"
+            [required]="field.required || false"
+            [(ngModel)]="formData[field.key]"
+            (ngModelChange)="onFieldValueChange(field.key, $event)"
+            class="form-textarea"
+            rows="4"
+          ></textarea>
+          
+          <!-- Campo numérico -->
+          <input 
+            *ngIf="field.type === 'number'"
+            type="number"
+            [id]="field.key"
+            [name]="field.key"
+            [placeholder]="field.placeholder || ''"
+            [required]="field.required || false"
+            [(ngModel)]="formData[field.key]"
+            (ngModelChange)="onFieldValueChange(field.key, $event)"
+            class="form-input"
+          />
+          
+          <!-- Campo de fecha -->
+          <input 
+            *ngIf="field.type === 'datetime'"
+            type="date"
+            [id]="field.key"
+            [name]="field.key"
+            [required]="field.required || false"
+            [(ngModel)]="formData[field.key]"
+            (ngModelChange)="onFieldValueChange(field.key, $event)"
+            class="form-input"
+          />
+          
+          <!-- Select/Dropdown -->
+          <select 
+            *ngIf="field.type === 'select'"
+            [id]="field.key"
+            [name]="field.key"
+            [required]="field.required || false"
+            [(ngModel)]="formData[field.key]"
+            (ngModelChange)="onFieldValueChange(field.key, $event)"
+            class="form-select"
+          >
+            <option value="">Selecciona una opción</option>
+            <option *ngFor="let option of getFieldOptions(field)" [value]="option.value">
+              {{ option.label }}
+            </option>
+          </select>
+          
+          <!-- Radio buttons -->
+          <div *ngIf="field.type === 'radio'" class="radio-group">
+            <div *ngFor="let option of getFieldOptions(field)" class="radio-option">
+              <input 
+                type="radio"
+                [id]="field.key + '_' + option.value"
+                [name]="field.key"
+                [value]="option.value"
+                [(ngModel)]="formData[field.key]"
+                (ngModelChange)="onFieldValueChange(field.key, $event)"
+                class="form-radio"
+              />
+              <label [for]="field.key + '_' + option.value" class="radio-label">
+                {{ option.label }}
+              </label>
+            </div>
+          </div>
+          
+          <!-- Checkbox -->
+          <div *ngIf="field.type === 'checkbox'" class="checkbox-group">
+            <input 
+              type="checkbox"
+              [id]="field.key"
+              [name]="field.key"
+              [(ngModel)]="formData[field.key]"
+              (ngModelChange)="onFieldValueChange(field.key, $event)"
+              class="form-checkbox"
+            />
+            <label [for]="field.key" class="checkbox-label">
+              {{ field.label }}
+            </label>
+          </div>
+          
+          <!-- Botón -->
+          <button 
+            *ngIf="field.type === 'button'"
+            type="button"
+            class="form-button"
+          >
+            {{ field.label }}
+          </button>
+          
+        </div>
+        
+      </form>
+    </div>
+    
+    <ng-template #noFieldsMessage>
+      <div class="no-fields-message">
+        <p>No hay campos en el formulario.</p>
+        <p>Arrastra campos desde la paleta para comenzar a construir tu formulario.</p>
+      </div>
+    </ng-template>
+  </div>
+</div>

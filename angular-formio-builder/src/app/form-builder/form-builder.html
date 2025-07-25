@@ -1,0 +1,180 @@
+<div class="form-builder-container">
+  <!-- Left Panel - Field Palette -->
+  <app-field-palette></app-field-palette>
+
+  <!-- Main Builder Area -->
+  <div class="builder-main">
+    <!-- Header -->
+    <div class="builder-header">
+      <div class="form-title-section">
+        <label>Título del Formulario:</label>
+        <input 
+          type="text" 
+          [value]="formSchema.title" 
+          (input)="onTitleChange($event)"
+          class="form-title-input"
+          placeholder="Ingresa el título del formulario"
+        />
+      </div>
+      <div class="builder-actions">
+        <button 
+          class="btn btn-back" 
+          (click)="goBack()"
+        >
+          ← Volver
+        </button>
+        <button 
+          class="btn btn-secondary" 
+          (click)="toggleJson()"
+          [class.active]="showJson"
+        >
+          Ver JSON
+        </button>
+        <button 
+          class="btn btn-primary" 
+          (click)="togglePreview()"
+          [class.active]="showPreview"
+        >
+          Vista Previa
+        </button>
+        <button 
+          class="btn btn-success" 
+          (click)="saveForm()"
+        >
+          {{ isEditMode ? 'Actualizar' : 'Guardar' }}
+        </button>
+        <button 
+          class="btn btn-danger" 
+          (click)="clearForm()"
+        >
+          Limpiar
+        </button>
+      </div>
+    </div>
+
+    <!-- Builder Content -->
+    <div class="builder-content">
+      <!-- Form Builder Area -->
+      <div class="form-canvas" *ngIf="!showPreview && !showJson">
+        <div 
+          class="drop-zone"
+          cdkDropList
+          id="formCanvas"
+          [cdkDropListData]="formSchema.fields"
+          (cdkDropListDropped)="onDrop($event)"
+          cdkDropListSortingDisabled="false"
+        >
+          <div class="empty-state" *ngIf="formSchema.fields.length === 0">
+            <div class="empty-icon">📝</div>
+            <h3>Construye tu formulario</h3>
+            <p>Arrastra campos desde la paleta de la izquierda o haz clic en ellos para agregarlos</p>
+          </div>
+
+          <div 
+            *ngFor="let field of formSchema.fields; trackBy: trackByFieldId" 
+            class="form-field-item"
+            cdkDrag
+            [class.selected]="selectedField?.id === field.id"
+            (click)="onFieldSelect(field)"
+          >
+            <div class="field-header">
+              <div class="field-type-badge">{{ getFieldTypeLabel(field.type) }}</div>
+              <button 
+                class="delete-btn"
+                (click)="onFieldDelete(field.key); $event.stopPropagation()"
+                title="Eliminar campo"
+              >
+                ✕
+              </button>
+            </div>
+            <div class="field-preview">
+              <label class="field-label">
+                {{ field.label }}
+                <span *ngIf="field.required" class="required-asterisk">*</span>
+              </label>
+              <div class="field-input-preview" [ngSwitch]="field.type">
+                <input 
+                  *ngSwitchCase="'textfield'"
+                  type="text" 
+                  [placeholder]="field.placeholder || 'Campo de texto'"
+                  disabled
+                />
+                <textarea 
+                  *ngSwitchCase="'textarea'"
+                  [placeholder]="field.placeholder || 'Área de texto'"
+                  disabled
+                ></textarea>
+                <input 
+                  *ngSwitchCase="'number'"
+                  type="number" 
+                  [placeholder]="field.placeholder || 'Número'"
+                  disabled
+                />
+                <input 
+                  *ngSwitchCase="'datetime'"
+                  type="date" 
+                  disabled
+                />
+                <select *ngSwitchCase="'select'" disabled>
+                  <option>{{ field.placeholder || 'Selecciona una opción' }}</option>
+                  <option *ngFor="let option of field.options">{{ option.label }}</option>
+                </select>
+                <div *ngSwitchCase="'checkbox'" class="checkbox-preview">
+                  <input type="checkbox" disabled>
+                  <span>{{ field.label }}</span>
+                </div>
+                <div *ngSwitchCase="'radio'" class="radio-preview">
+                  <div *ngFor="let option of field.options" class="radio-option">
+                    <input type="radio" [name]="field.id" disabled>
+                    <span>{{ option.label }}</span>
+                  </div>
+                </div>
+                <button *ngSwitchCase="'button'" type="button" disabled>
+                  {{ field.label }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Preview Area -->
+      <div class="preview-area" *ngIf="showPreview">
+        <app-form-preview></app-form-preview>
+      </div>
+
+      <!-- JSON Area -->
+      <div class="json-area" *ngIf="showJson">
+        <div class="json-header">
+          <h3>Esquema JSON del Formulario</h3>
+          <button class="btn btn-secondary" (click)="copyJsonToClipboard()">
+            Copiar JSON
+          </button>
+        </div>
+        <pre class="json-content">{{ generatedJson }}</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Panel - Field Configuration -->
+  <div class="config-panel" *ngIf="selectedField">
+    <app-field-config></app-field-config>
+  </div>
+</div>
+
+<!-- Success Modal -->
+<div class="modal-overlay" *ngIf="showSuccessModal" (click)="closeSuccessModal()">
+  <div class="success-modal" (click)="$event.stopPropagation()">
+    <div class="success-icon">
+      <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" fill="#10B981"/>
+        <path d="M9 12l2 2 4-4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <h3>{{ successMessage }}</h3>
+    <p>El formulario se ha procesado correctamente.</p>
+    <button class="btn btn-primary" (click)="closeSuccessModal()">
+      Continuar
+    </button>
+  </div>
+</div>

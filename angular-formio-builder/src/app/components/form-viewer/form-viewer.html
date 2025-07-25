@@ -1,0 +1,201 @@
+<div class="form-viewer-container">
+  <!-- Header -->
+  <div class="header">
+    <div class="header-content">
+      <h1>{{ formItem?.title || 'Formulario' }}</h1>
+      <div class="header-actions">
+        <button class="btn btn-secondary" (click)="goBack()">
+          ← Volver
+        </button>
+        <button class="btn btn-primary" (click)="editForm()" *ngIf="formItem">
+          ✏️ Editar
+        </button>
+      </div>
+    </div>
+    
+    <!-- View Toggle -->
+    <div class="view-toggle">
+      <button 
+        class="toggle-btn" 
+        [class.active]="showPreview" 
+        (click)="toggleView('preview')">
+        👁️ Vista Previa
+      </button>
+      <button 
+        class="toggle-btn" 
+        [class.active]="showJson" 
+        (click)="toggleView('json')">
+        📄 JSON
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading" *ngIf="isLoading">
+    <p>Cargando formulario...</p>
+  </div>
+
+  <!-- Error State -->
+  <div class="error" *ngIf="error">
+    <p>{{ error }}</p>
+    <button class="btn btn-primary" (click)="goBack()">Volver al inicio</button>
+  </div>
+
+  <!-- Form Content -->
+  <div class="content" *ngIf="!isLoading && !error && formItem">
+    <!-- Form Info -->
+    <div class="form-info">
+      <p><strong>ID:</strong> {{ formItem.id }}</p>
+      <p><strong>Creado:</strong> {{ formItem.createdAt | date:'dd/MM/yyyy HH:mm' }}</p>
+      <p><strong>Campos:</strong> {{ formSchema.fields.length }}</p>
+    </div>
+
+    <!-- Preview View -->
+    <div class="preview-container" *ngIf="showPreview">
+      <h2>Vista Previa del Formulario</h2>
+      <p class="preview-description">Así es como verán los usuarios tu formulario</p>
+      
+      <div class="form-preview">
+        <form class="preview-form">
+          <h3>{{ formSchema.title }}</h3>
+          
+          <div class="form-field" *ngFor="let field of formSchema.fields">
+            <!-- Campo de Texto -->
+            <div *ngIf="field.type === 'text' || field.type === 'textfield'" class="field-group">
+              <label [for]="field.key">{{ field.label }}</label>
+              <input 
+                [id]="field.key"
+                type="text" 
+                [placeholder]="field.placeholder || ''"
+                [value]="formData[field.key]"
+                (input)="onFieldValueChange(field.key, $any($event.target).value)"
+                [required]="field.required">
+            </div>
+
+            <!-- Área de Texto -->
+            <div *ngIf="field.type === 'textarea'" class="field-group">
+              <label [for]="field.key">{{ field.label }}</label>
+              <textarea 
+                [id]="field.key"
+                [placeholder]="field.placeholder || ''"
+                [value]="formData[field.key]"
+                (input)="onFieldValueChange(field.key, $any($event.target).value)"
+                [required]="field.required">
+              </textarea>
+            </div>
+
+            <!-- Campo Numérico -->
+            <div *ngIf="field.type === 'number'" class="field-group">
+              <label [for]="field.key">{{ field.label }}</label>
+              <input 
+                [id]="field.key"
+                type="number" 
+                [placeholder]="field.placeholder || ''"
+                [value]="formData[field.key]"
+                (input)="onFieldValueChange(field.key, $any($event.target).value)"
+                [required]="field.required">
+            </div>
+
+            <!-- Campo de Fecha -->
+            <div *ngIf="field.type === 'date'" class="field-group">
+              <label [for]="field.key">{{ field.label }}</label>
+              <input 
+                [id]="field.key"
+                type="date" 
+                [value]="formData[field.key]"
+                (input)="onFieldValueChange(field.key, $any($event.target).value)"
+                [required]="field.required">
+            </div>
+
+            <!-- Campo de Fecha y Hora -->
+            <div *ngIf="field.type === 'datetime'" class="field-group">
+              <label [for]="field.key">{{ field.label }}</label>
+              <input 
+                [id]="field.key"
+                type="datetime-local" 
+                [value]="formData[field.key]"
+                (input)="onFieldValueChange(field.key, $any($event.target).value)"
+                [required]="field.required">
+            </div>
+
+            <!-- Lista Desplegable -->
+            <div *ngIf="field.type === 'select'" class="field-group">
+              <label [for]="field.key">{{ field.label }}</label>
+              <select 
+                [id]="field.key"
+                [value]="formData[field.key]"
+                (change)="onFieldValueChange(field.key, $any($event.target).value)"
+                [required]="field.required">
+                <option value="">Seleccionar...</option>
+                <option *ngFor="let option of field.options" [value]="option.value">
+                  {{ option.label }}
+                </option>
+              </select>
+            </div>
+
+            <!-- Casilla de Verificación -->
+            <div *ngIf="field.type === 'checkbox'" class="field-group checkbox-group">
+              <label class="checkbox-label">
+                <input 
+                  type="checkbox" 
+                  [checked]="formData[field.key]"
+                  (change)="onFieldValueChange(field.key, $any($event.target).checked)">
+                {{ field.label }}
+              </label>
+            </div>
+
+            <!-- Botones de Radio -->
+            <div *ngIf="field.type === 'radio'" class="field-group">
+              <label class="field-label">{{ field.label }}</label>
+              <div class="radio-group">
+                <label *ngFor="let option of field.options" class="radio-label">
+                  <input 
+                    type="radio" 
+                    [name]="field.key"
+                    [value]="option.value"
+                    [checked]="formData[field.key] === option.value"
+                    (change)="onFieldValueChange(field.key, option.value)">
+                  {{ option.label }}
+                </label>
+              </div>
+            </div>
+
+            <!-- Botón -->
+            <div *ngIf="field.type === 'button'" class="field-group">
+              <button type="button" class="form-button">
+                {{ field.label }}
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- Captured Data Preview -->
+      <div class="captured-data">
+        <h3>Datos Capturados</h3>
+        <div class="data-preview">
+          <div *ngFor="let field of formSchema.fields" class="data-item">
+            <strong>{{ field.label }}:</strong> 
+            <span class="data-value">{{ formData[field.key] || '(vacío)' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- JSON View -->
+    <div class="json-container" *ngIf="showJson">
+      <h2>Estructura JSON del Formulario</h2>
+      <p class="json-description">Estructura completa del formulario y datos capturados</p>
+      
+      <div class="json-content">
+        <pre><code>{{ getFormDataJson() }}</code></pre>
+      </div>
+      
+      <div class="json-actions">
+        <button class="btn btn-secondary" (click)="copyToClipboard()">
+          📋 Copiar JSON
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

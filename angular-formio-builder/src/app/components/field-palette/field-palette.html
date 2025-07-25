@@ -1,0 +1,24 @@
+<div class="field-palette">
+  <h3>Paleta de Campos</h3>
+  <div 
+    class="field-types"
+    cdkDropList
+    cdkDropListSortingDisabled="true"
+    [cdkDropListData]="fieldTypes"
+    cdkDropListConnectedTo="formCanvas"
+  >
+    <div 
+      *ngFor="let fieldType of fieldTypes" 
+      class="field-type-item"
+      cdkDrag
+      [cdkDragData]="fieldType.type"
+      (click)="onFieldClick(fieldType.type)"
+    >
+      <div class="field-icon">{{ fieldType.icon }}</div>
+      <div class="field-info">
+        <div class="field-label">{{ fieldType.label }}</div>
+        <div class="field-description">{{ fieldType.description }}</div>
+      </div>
+    </div>
+  </div>
+</div>

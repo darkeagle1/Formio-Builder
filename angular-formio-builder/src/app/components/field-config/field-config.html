@@ -1,0 +1,164 @@
+<div class="field-config">
+  <div class="config-header">
+    <div class="header-content">
+      <div class="header-text">
+        <h3>Configuración del Campo</h3>
+        <p *ngIf="selectedField">{{ getFieldTypeLabel(selectedField.type) }}</p>
+      </div>
+      <button 
+        type="button" 
+        class="close-btn"
+        (click)="closeConfig()"
+        title="Cerrar configuración"
+      >
+        ✕
+      </button>
+    </div>
+  </div>
+
+  <div class="config-content" *ngIf="selectedField; else noFieldSelected">
+    <form [formGroup]="configForm" (ngSubmit)="onConfigChange()">
+      <!-- Basic Properties -->
+      <div class="form-group">
+        <label for="label">Etiqueta:</label>
+        <input 
+          id="label"
+          type="text" 
+          formControlName="label"
+          (input)="onConfigChange()"
+          placeholder="Etiqueta del campo"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="placeholder">Placeholder:</label>
+        <input 
+          id="placeholder"
+          type="text" 
+          formControlName="placeholder"
+          (input)="onConfigChange()"
+          placeholder="Texto de ayuda"
+        />
+      </div>
+
+      <div class="form-group checkbox-group">
+        <label>
+          <input 
+            type="checkbox" 
+            formControlName="required"
+            (change)="onConfigChange()"
+          />
+          Campo obligatorio
+        </label>
+      </div>
+
+      <!-- Length Validation -->
+      <div *ngIf="showLengthValidation" class="validation-section">
+        <h4>Validación de Longitud</h4>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="minLength">Longitud Mínima:</label>
+            <input 
+              id="minLength"
+              type="number" 
+              formControlName="minLength"
+              (input)="onConfigChange()"
+              min="0"
+            />
+          </div>
+          <div class="form-group">
+            <label for="maxLength">Longitud Máxima:</label>
+            <input 
+              id="maxLength"
+              type="number" 
+              formControlName="maxLength"
+              (input)="onConfigChange()"
+              min="0"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Options for Select/Radio -->
+      <div *ngIf="showOptions" class="options-section">
+        <h4>Opciones</h4>
+        <div class="options-list">
+          <div 
+            *ngFor="let option of fieldOptions; let i = index" 
+            class="option-item"
+          >
+            <div class="option-inputs">
+              <input 
+                type="text" 
+                [(ngModel)]="option.label"
+                [ngModelOptions]="{standalone: true}"
+                (input)="onOptionChange()"
+                placeholder="Etiqueta"
+              />
+              <input 
+                type="text" 
+                [(ngModel)]="option.value"
+                [ngModelOptions]="{standalone: true}"
+                (input)="onOptionChange()"
+                placeholder="Valor"
+              />
+            </div>
+            <button 
+              type="button" 
+              class="remove-option-btn"
+              (click)="removeOption(i)"
+              title="Eliminar opción"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+        <button 
+          type="button" 
+          class="add-option-btn"
+          (click)="addOption()"
+        >
+          + Agregar Opción
+        </button>
+      </div>
+
+      <!-- Custom Validation Message -->
+      <div class="form-group">
+        <label for="validationMessage">Mensaje de Validación Personalizado:</label>
+        <textarea 
+          id="validationMessage"
+          formControlName="validationMessage"
+          (input)="onConfigChange()"
+          placeholder="Mensaje que se mostrará cuando la validación falle"
+          rows="3"
+        ></textarea>
+      </div>
+
+      <!-- Actions -->
+      <div class="config-actions">
+        <button 
+          type="button" 
+          class="btn btn-primary"
+          (click)="saveConfig()"
+        >
+          Guardar Cambios
+        </button>
+        <button 
+          type="button" 
+          class="btn btn-danger"
+          (click)="deleteField()"
+        >
+          Eliminar Campo
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <ng-template #noFieldSelected>
+    <div class="no-field-selected">
+      <div class="empty-icon">⚙️</div>
+      <h3>Selecciona un campo</h3>
+      <p>Haz clic en un campo del formulario para configurar sus propiedades</p>
+    </div>
+  </ng-template>
+</div>

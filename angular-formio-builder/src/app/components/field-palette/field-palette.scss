@@ -1,0 +1,109 @@
+.field-palette {
+  background: #f8f9fa;
+  border-right: 1px solid #e9ecef;
+  padding: 20px;
+  height: 100vh;
+  overflow-y: auto;
+  width: 280px;
+  min-width: 280px;
+
+  h3 {
+    margin: 0 0 20px 0;
+    color: #495057;
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  .field-types {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .field-type-item {
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    &:hover {
+      border-color: #007bff;
+      box-shadow: 0 2px 4px rgba(0, 123, 255, 0.1);
+      transform: translateY(-1px);
+    }
+
+    &.cdk-drag-dragging {
+      opacity: 0.8;
+      transform: rotate(2deg);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .field-icon {
+      font-size: 24px;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #e9ecef;
+      border-radius: 6px;
+    }
+
+    .field-info {
+      flex: 1;
+
+      .field-label {
+        font-weight: 600;
+        color: #495057;
+        margin-bottom: 4px;
+        font-size: 14px;
+      }
+
+      .field-description {
+        color: #6c757d;
+        font-size: 12px;
+        line-height: 1.3;
+      }
+    }
+  }
+}
+
+.cdk-drag-preview {
+  background: white;
+  border: 1px solid #007bff;
+  border-radius: 8px;
+  padding: 12px;
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: 250px;
+
+  .field-icon {
+    font-size: 20px;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #e9ecef;
+    border-radius: 4px;
+  }
+
+  .field-label {
+    font-weight: 600;
+    color: #495057;
+    font-size: 14px;
+  }
+}
+
+.cdk-drag-placeholder {
+  opacity: 0.4;
+  background: #f8f9fa;
+  border: 2px dashed #dee2e6;
+}
